@@ -1,0 +1,37 @@
+Pipeline {
+	agent any
+	environment {
+	     //set docker registry credentials and image details
+	     DOCKER_REGISTRY = 'docker.io'
+	     DOCKER_IMAGE = 'joshnak4/image-1'
+	     DOCKER_CRENDENTIALS_ID = '7af1474a-2ada-409d-b074-d5dc6288b911'
+	}
+	
+	stages {
+		stage('Build') {
+			steps {
+				script {
+					docker.build("$DOCKER_IMAGE:latest")
+				}
+			}
+		}
+		
+		stage('login to docker hub') {
+			steps{
+				script {
+					docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS_ID}") { 
+					echo "Successfully logged into Docker Hub"
+				}
+			}
+		}
+		
+		stage ('push Image') {
+			steps {
+				script {
+					Docker.withRegistry("https://${DOCKER_REGISTRY}",${DOCKER_CREDENTIALS-ID}") {
+					docker.image("${DOCKER_IMAGE}:latest").push()
+					}
+				}
+			}
+		}
+	}
